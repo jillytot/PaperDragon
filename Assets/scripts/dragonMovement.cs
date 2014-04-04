@@ -15,7 +15,7 @@ public class dragonMovement : MonoBehaviour {
 	float Horizontal; //raw value for Horizontal axis
 	float Vertical; //raw value for Vertical axis
 	
-	private Vector3 moveDirection = Vector3.zero; //initialize movement direction
+	public Vector3 moveDirection = Vector3.zero; //initialize movement direction
 	private Vector3 inputMagnitude; //store axis input
 	private Vector3 lastMoveDirection; //record last movement.
 	public Vector3 playerPos;
@@ -29,6 +29,10 @@ public class dragonMovement : MonoBehaviour {
 	string myFire2 = "Fire2";
 	string myFire3 = "Fire3";
 	string myJump = "Jump";
+
+	Vector3 storeNormal;
+
+	public GameObject fireBreath;
 	
 	
 	
@@ -37,6 +41,7 @@ public class dragonMovement : MonoBehaviour {
 
 		controller = GetComponent<CharacterController>();
 		myRotation = transform.rotation;
+		fireBreath.SetActive(false);
 		
 		
 	}
@@ -70,6 +75,16 @@ public class dragonMovement : MonoBehaviour {
 				moveDirection *= newSpeed;
 				
 				
+			RaycastHit hit;
+			Physics.Raycast(transform.position, Vector3.down, out hit);
+			Debug.DrawRay(transform.position, Vector3.down, Color.blue, 2);
+			
+			if (Physics.Raycast(transform.position, Vector3.down, 2)) {
+				
+				storeNormal = hit.normal;
+				
+			}
+
 				//Apply changes to each child of the game object
 				foreach (Transform child in transform)
 					
@@ -78,7 +93,7 @@ public class dragonMovement : MonoBehaviour {
 					if (moveDirection.sqrMagnitude > 0) { 
 						
 						//myAnimation.SetBool("Run", true); //Changes avatar to running state
-						var targetRotation = Quaternion.LookRotation(moveDirection); //set target towards direction of motion
+						var targetRotation = Quaternion.LookRotation(moveDirection, storeNormal); //set target towards direction of motion
 						child.rotation = child.rotation.EaseTowards(targetRotation, turnSpeed); //rotate towards the direction of motion
 						myRotation = child.rotation;
 						
@@ -137,6 +152,18 @@ public class dragonMovement : MonoBehaviour {
 					}
 				}
 			}
+
+		if (Input.GetButtonDown(myFire1)) {
+
+			fireBreath.SetActive(true);
+
+		} 
+
+		if (Input.GetButtonUp(myFire1)) {
+
+			fireBreath.SetActive(false);
+		
+		}
 			
 		//Controls Gravity
 		moveDirection.y -= gravity * Time.deltaTime;
