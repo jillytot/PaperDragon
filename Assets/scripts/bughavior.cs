@@ -19,6 +19,9 @@ public class bughavior : MonoBehaviour {
 	Vector3 storeNormal;
 	Vector3 targetPosition;
 
+	public ParticleSystem imOnFire;
+	bool fireOn;
+
 	// Use this for initialization
 	void Start () {
 
@@ -26,6 +29,8 @@ public class bughavior : MonoBehaviour {
 		runAway = false;
 		runFromTarget = Vector3.zero;
 		targetPosition = Vector3.zero;
+		fireOn = false;
+		imOnFire.enableEmission = false;
 	
 	}
 	
@@ -98,8 +103,14 @@ public class bughavior : MonoBehaviour {
 			//var smoothMove = Vector3.SmoothDamp(transform.position, moveDirection, ref targetPosition, 0);
 			//moveDirection = smoothMove;
 			moveDirection *= speed;
+
 		}
 
+			if (fireOn == true) {
+
+				imOnFire.enableEmission = true;
+		
+			}
 
 		moveDirection.y -= dragonMovement.gravity * Time.deltaTime;
 		myController.Move(moveDirection * Time.deltaTime);
@@ -128,6 +139,18 @@ public class bughavior : MonoBehaviour {
 		if (itsSafeNow) {
 
 			runAway = false;
+
+		}
+	}
+
+	void OnParticleCollision(GameObject other) {
+
+		var fire = other.gameObject.CompareTag("fire");
+
+		if (fire) {
+
+			Debug.Log("OH GOD IM ON FIRE HELP ME PLEASE OH GOD");
+			fireOn = true;
 
 		}
 	}

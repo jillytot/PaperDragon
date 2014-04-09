@@ -3,6 +3,8 @@
 using System.Collections;
 
 public class dragonMovement : MonoBehaviour {
+
+	public creatureStats mystats;
 	
 	public float speed = 15.0F; //Max speed of the character
 	float newSpeed; //Used to modify speed based on input
@@ -33,7 +35,10 @@ public class dragonMovement : MonoBehaviour {
 	Vector3 storeNormal;
 
 	public GameObject fireBreath;
-	
+	public ParticleSystem dragonBreath;
+	float breathAngleMin = 0;
+	float breathAngleMax = 35;
+	float breathAngleCur;
 	
 	
 	void Awake() {
@@ -41,12 +46,18 @@ public class dragonMovement : MonoBehaviour {
 
 		controller = GetComponent<CharacterController>();
 		myRotation = transform.rotation;
-		fireBreath.SetActive(false);
+		//fireBreath.SetActive(false);
+		dragonBreath.enableEmission = false;
 		
 		
 	}
 	
 	void Start() {
+
+		//base.Start();
+
+		breathAngleCur = (breathAngleMin + breathAngleMax) / 2;
+		Debug.Log("Breath Angle: " + breathAngleCur);
 
 	}
 	
@@ -82,6 +93,8 @@ public class dragonMovement : MonoBehaviour {
 			if (Physics.Raycast(transform.position, Vector3.down, 2)) {
 				
 				storeNormal = hit.normal;
+				//Debug.Log("Normal hit: " + storeNormal);
+				Debug.DrawRay(transform.position, storeNormal, Color.green, 2);
 				
 			}
 
@@ -153,17 +166,9 @@ public class dragonMovement : MonoBehaviour {
 				}
 			}
 
-		if (Input.GetButtonDown(myFire1)) {
+		breathControl();
 
-			fireBreath.SetActive(true);
-
-		} 
-
-		if (Input.GetButtonUp(myFire1)) {
-
-			fireBreath.SetActive(false);
-		
-		}
+	
 			
 		//Controls Gravity
 		moveDirection.y -= gravity * Time.deltaTime;
@@ -171,6 +176,25 @@ public class dragonMovement : MonoBehaviour {
 		//move the player at the end of Update
 			controller.Move(moveDirection * Time.deltaTime);
 			playerPos = this.gameObject.transform.position;
+
+	}
+
+	void breathControl () {
+
+		if (Input.GetButtonDown(myFire1)) {
+			
+			//fireBreath.SetActive(true);
+			dragonBreath.enableEmission = true;
+			
+		} 
+		
+		if (Input.GetButtonUp(myFire1)) {
+			
+			//fireBreath.SetActive(false);
+			dragonBreath.enableEmission = false;
+			
+		}
+
 
 	}
 	

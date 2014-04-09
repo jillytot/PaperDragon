@@ -1,0 +1,94 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 possible avenues for exploration:\
+\
+
+\b Movement - 
+\b0 \
+\
+Style of movement & controls. Right now the dragon moves on a single pivot, which makes sense for a 2 legged character, or a creature with a short body. Dragons should drive by either their front or hind legs. \
+\
+The movement simulation can remain nonexistent like it is currently, or there incremental steps to simulating basics to really trying to capture character movement in depth.\
+\
+The dragons do need some level of physicality. There needs to be a difference between a small speedy dragon, and a big powerful dragon, and everything in-between. \
+\
+\
+
+\b Flight - 
+\b0 \
+\
+Flight is in it's own separate category because it will behave very differently from ground controls. \
+The transition to full flight would probably take intermediate steps, going from floaty jumps (like Yoshi's extended jump in Yoshi's island) to actually getting some forward momentum.\
+\
+The camera angle should change in full on flight mode and position behind the dragon since you will always be moving in a forward direction. \
+\
+In other games flight is a mode that toggles on and off, and the controls immediately change context. I imagine we will probably want more of a transition, where many of the controls you are already used to are still available while flying.\
+\
+I also think that elements like Wind speed and direction should play a big roll in flight. \
+\
+
+\b Combat -\
+\
+Exploration -\
+\
+GameLoop (Eating, growing up) -\
+\
+Enemies -\
+\
+Environmental hazards -\
+\
+\
+
+\fs72 BRB\
+Gonna get some food, then\
+gonna work some moar
+\fs24 \
+\
+\
+Starting Attributes:\
+\
+
+\b0 Calories - Intake\
+Calories are converted into Stamina and Fire, \
+Hunger: As long as hunger is full, stamina and fire will be restored at normal rates\
+If hunger is below normal, you we get a penalty to your regen\
+If hunger is empty for too long, you might start taking HP damage\
+\
+Excess calories could be used for leveling up?
+\b \
+\
+\
+\
+
+\b0 Possible Physical Attributes:
+\b \
+\
+
+\b0 HP(Vitality, how much shit you can take before you kroke)\
+\
+Speed (Dexterity, ability to dodge, or turn quickly, or something)\
+\
+Stamina (Energy used to do actions, such as attacking, flapping wings, jumping, whatever)\
+\
+Weight (Momentum / Poise)\
+\
+Physical Strength\
+\
+Elemental (Breath type?) and Resistances\
+\
+GlideRatio (Holding altitude while gliding) \
+- Non arrow dynamic dragons cause drag, like if you have a lot of spikes everywhere.\
+\
+Lift to Drag ratio - Overcome this to enable flight\
+\
+Wing Thrust - How much thrust each flap of the wings gives you. \
+\
+Air Maneuverability - Quickly change direction / speed\
+wings - pitch, roll\
+tail / fins - yaw\
+\
+}
