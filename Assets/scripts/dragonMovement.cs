@@ -39,6 +39,7 @@ public class dragonMovement : MonoBehaviour {
 	float breathAngleMin = 0;
 	float breathAngleMax = 35;
 	float breathAngleCur;
+
 	
 	
 	void Awake() {

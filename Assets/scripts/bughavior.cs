@@ -21,9 +21,19 @@ public class bughavior : MonoBehaviour {
 
 	public ParticleSystem imOnFire;
 	bool fireOn;
+	bool waitForNexFire;
+	bool burning;
+
+	public creatureStats myStats;
+	public Material crispy;
+	Material storeMat;
+	Transform myChild;
 
 	// Use this for initialization
 	void Start () {
+
+		myStats = new creatureStats();
+		//myStats = this.gameObject.GetComponent<creatureStats>();
 
 		myController = GetComponent<CharacterController>();
 		runAway = false;
@@ -31,6 +41,17 @@ public class bughavior : MonoBehaviour {
 		targetPosition = Vector3.zero;
 		fireOn = false;
 		imOnFire.enableEmission = false;
+		waitForNexFire = false;
+		burning = false;
+
+		foreach (Transform child in transform) {
+
+			myChild = child;
+
+		}
+
+		storeMat = myChild.renderer.material;
+
 	
 	}
 	
@@ -98,26 +119,38 @@ public class bughavior : MonoBehaviour {
 
 			} 
 
-			//moveDirection = Vector3.MoveTowards(transform.position, targetPosition, speed);
+			onDeath();
 			moveDirection = Vector3.Lerp(transform.position, targetPosition, 1);
-			//var smoothMove = Vector3.SmoothDamp(transform.position, moveDirection, ref targetPosition, 0);
-			//moveDirection = smoothMove;
 			moveDirection *= speed;
 
 		}
 
+			//If im on fire, turn on the fire particles, and trigger other fire behaviors
 			if (fireOn == true) {
 
 				imOnFire.enableEmission = true;
+				StartCoroutine("putOutFire");
+				fireOn = false;
+				waitForNexFire = true;
 		
 			}
 
+		//How to take damage while on fire
+		if (burning = true && myStats.imDead == false) {
+
+			myStats.HP -= 0.1f * Time.deltaTime;
+			Debug.Log("bugHP: " + myStats.HP);
+
+		}
+
+		//Do the movement last, after all the other calculations are done
 		moveDirection.y -= dragonMovement.gravity * Time.deltaTime;
 		myController.Move(moveDirection * Time.deltaTime);
 	}
 
 	void OnTriggerEnter(Collider other) {
 
+		//if a hunter character is near, then get away from them STAT!
 		var runForIt = other.gameObject.CompareTag("hunter");
 
 		if (runForIt) {
@@ -126,14 +159,12 @@ public class bughavior : MonoBehaviour {
 			runAway = true; 
 			myHunter = other.GetComponent<Transform>();
 
-
-
-
 		} 
 	}
 
 	void OnTriggerExit(Collider other) {
 
+		//If the hunter is not near, it's safe to resume normal behavior.
 		var itsSafeNow = other.gameObject.CompareTag("hunter");
 
 		if (itsSafeNow) {
@@ -142,16 +173,40 @@ public class bughavior : MonoBehaviour {
 
 		}
 	}
-
+	
 	void OnParticleCollision(GameObject other) {
 
+		//If im hit with fire particles, i am on fire
 		var fire = other.gameObject.CompareTag("fire");
 
-		if (fire) {
+		if (fire && waitForNexFire == false) {
 
 			Debug.Log("OH GOD IM ON FIRE HELP ME PLEASE OH GOD");
 			fireOn = true;
+			burning = true;
 
+		}
+	}
+
+	IEnumerator putOutFire () {
+
+		yield return new WaitForSeconds(3);
+		imOnFire.enableEmission = false;
+		waitForNexFire = false;
+		burning = false;
+
+	}
+
+	void onDeath () {
+
+		//TODO: create an enum for types of attacks, so the creature knows what it does from and unique behavior can used for each instance
+		//attack type enum can be passed into this function to determine what to do
+
+		if (myStats.imDead == true) {
+
+			maxSpeed = 0;
+			myChild.renderer.material = crispy;
+	
 		}
 	}
 }

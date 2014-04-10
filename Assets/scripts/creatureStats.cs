@@ -12,30 +12,31 @@ public enum CreatureType {
 //This script will eventually manage stats for all creatures in the game
 public class creatureStats : MonoBehaviour {
 
-	public int HP;
-	public int maxHP;
+	public float HP; //current HP, when HP reaches 0, you die
+	public int maxHP; //Maximum HP available
 
-	public int stamina;
-	public int maxStamina;
+	public int stamina; //stamina is used to do actions
+	public int maxStamina; //maximum stamina for creature
+	public int staminaRestoreRate; //The rate at which stamina restores itself
 
-	public int hunger;
-	public int strength;
+	public int hunger; //When you are hungry, your stats will restore slower, and you may start taking damage (need to think on this more)
+	public int strength; //Used to calculate attack strength among other things
 
-	public int fireStore;
-	public int calorieStore;
-	public int calorieCount;
+	public float fireRestoreRate; //rate at which dragon fire restores it'self
+	public float fireStore; //amount of fire available to use
+	public float maxFireStore; //Maximum fire reserve this creature can have
 
-	public CreatureType thisCreature;
-	public static float timeTick = 0.25f;
-	float storeTick;
+	public float calorieStore; //current calaories the player has for use
+	public float calorieBurnRate; //the rate at which calories burn
+
+	public float calorieValue; //This is how many calories this creature provides when consumed
+
+	public CreatureType thisCreature; //Determines what kind of creature this is
+
+	public bool imDead;
 
 	// Use this for initialization
 	void Start () {
-
-		Debug.Log("TEST");
-
-		HP = maxHP;
-		storeTick = timeTick;
 
 		//initialize dragon specific stats
 		if (thisCreature == CreatureType.dragon) {
@@ -43,24 +44,37 @@ public class creatureStats : MonoBehaviour {
 			Debug.Log("I am a dragon!");
 			
 		}
+
+		imDead = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-		Debug.DrawRay(transform.position, Vector3.forward, Color.red, 2);
+		//clamp HP baseline to 0;
+		if (HP < 0) {
 
-		if (timeTick > 0) {
+			HP = 0;
+			imDead = true;
 
-			timeTick -= Time.deltaTime;
 
 		} 
 
-		if (timeTick <= 0) {
+		Debug.DrawRay(transform.position, Vector3.forward, Color.red, 2);
 
-			Debug.Log("Tick Tock!");
-			timeTick = storeTick;
+		if (thisCreature == CreatureType.dragon) {
 
+			//special behavior just for dragons
+			dragonVariables();
+			
 		}
 	}	
+
+	void dragonVariables () {
+
+
+			calorieStore -= calorieBurnRate * Time.deltaTime;
+			Debug.Log ("Calories: " + calorieStore);
+
+	}
 }
