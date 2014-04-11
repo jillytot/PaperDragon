@@ -32,13 +32,25 @@ public class dragonMovement : MonoBehaviour {
 	string myFire3 = "Fire3";
 	string myJump = "Jump";
 
+	//used for determining pitch / yaw of dragon as it travels over terrain
 	Vector3 storeNormal;
 
+	//variables for controlling fire breath
 	public GameObject fireBreath;
 	public ParticleSystem dragonBreath;
+	public ParticleSystem nomNom;
 	float breathAngleMin = 0;
 	float breathAngleMax = 35;
 	float breathAngleCur;
+
+	public GameObject myHead;
+	GameObject thingInMyMouth;
+	public Collider dragonHead;
+	bool mouthIsFull;
+
+	bool triggerMouthIsFull;
+	Vector3 mouthOffset;
+	int chewCount = 3;
 
 	
 	
@@ -47,16 +59,16 @@ public class dragonMovement : MonoBehaviour {
 
 		controller = GetComponent<CharacterController>();
 		myRotation = transform.rotation;
-		//fireBreath.SetActive(false);
 		dragonBreath.enableEmission = false;
+		nomNom.enableEmission = false;
+		mouthIsFull = false;
 		
 		
 	}
 	
 	void Start() {
 
-		//base.Start();
-
+		//trying to control the wideness and speed of the dragon breath programmatically
 		breathAngleCur = (breathAngleMin + breathAngleMax) / 2;
 		Debug.Log("Breath Angle: " + breathAngleCur);
 
@@ -155,28 +167,33 @@ public class dragonMovement : MonoBehaviour {
 							var targetRotation = Quaternion.LookRotation(lookatMoveDirection); //set target towards direction of motion
 							child.rotation = child.rotation.EaseTowards(targetRotation, turnSpeed); //rotate towards the direction of motion
 							myRotation = child.rotation;
-							
+
 						}
 						
 					}  else {
 						
 						//myAnimation.SetBool ("Run", false); 
 						
-						
 					}
 				}
 			}
 
 		breathControl();
+		nomControl();
 
-	
-			
 		//Controls Gravity
 		moveDirection.y -= gravity * Time.deltaTime;
 
 		//move the player at the end of Update
-			controller.Move(moveDirection * Time.deltaTime);
-			playerPos = this.gameObject.transform.position;
+		controller.Move(moveDirection * Time.deltaTime);
+		playerPos = this.gameObject.transform.position;
+
+		if (mouthIsFull == true) {
+			
+			thingInMyMouth.transform.position = myHead.transform.position;
+			thingInMyMouth.transform.rotation = myHead.transform.rotation;
+			
+		}
 
 	}
 
@@ -196,6 +213,27 @@ public class dragonMovement : MonoBehaviour {
 			
 		}
 
+
+	}
+
+	void nomControl () {
+
+		if (Input.GetButtonDown(myFire2) && mouthIsFull == true) {
+			
+			//fireBreath.SetActive(true);
+			nomNom.enableEmission = true;
+			nomNom.Play();
+			chewCount -= 1;
+			
+		} 
+
+		if (chewCount <= 0) {
+
+			chewCount = 3;
+			Destroy(thingInMyMouth);
+			mouthIsFull = false;
+
+		}
 
 	}
 	
@@ -227,5 +265,25 @@ public class dragonMovement : MonoBehaviour {
 		//It magically works!
 		return newSpeed;
 
+	}
+
+	void OnTriggerEnter(Collider other) {
+
+		var otherCreature = other.GetComponent<creatureStats>();
+
+		if (otherCreature) {
+
+			if (otherCreature.imDead == true && mouthIsFull == false) {
+
+				//otherCreature.transform.parent = myHead.transform;
+
+			
+				thingInMyMouth = otherCreature.gameObject;
+				mouthIsFull = true;
+				thingInMyMouth.gameObject.GetComponent<CharacterController>().detectCollisions = false;
+
+
+			}
+		}
 	}
 }

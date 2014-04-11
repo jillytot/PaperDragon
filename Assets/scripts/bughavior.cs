@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(creatureStats))]
+
 public class bughavior : MonoBehaviour {
 
 	public float speed = 0;
@@ -24,7 +26,7 @@ public class bughavior : MonoBehaviour {
 	bool waitForNexFire;
 	bool burning;
 
-	public creatureStats myStats;
+	internal creatureStats myStats;
 	public Material crispy;
 	Material storeMat;
 	Transform myChild;
@@ -32,8 +34,8 @@ public class bughavior : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		myStats = new creatureStats();
-		//myStats = this.gameObject.GetComponent<creatureStats>();
+		//myStats = new creatureStats();
+		myStats = this.gameObject.GetComponent<creatureStats>();
 
 		myController = GetComponent<CharacterController>();
 		runAway = false;
@@ -58,11 +60,12 @@ public class bughavior : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+
 		if (myController.isGrounded) {
 
 			if (runAway == true) {
 
-
+				Debug.Log ("run away behavior is active");
 				RaycastHit hit;
 				Physics.Raycast(transform.position, Vector3.down, out hit);
 				Debug.DrawRay(transform.position, Vector3.down, Color.blue, 2);
@@ -72,22 +75,21 @@ public class bughavior : MonoBehaviour {
 					storeNormal = hit.normal;
 					
 				}
-			//transform.Translate(Vector3.forward * Time.deltaTime * speed);
-			//moveDirection = runFromTarget;
-			//moveDirection = Vector3.MoveTowards(transform.position, runFromTarget, 10f);
+
 			var runFromXZ = new Vector3 (runFromTarget.x, 0, runFromTarget.z);
 			var targetRotation = Quaternion.LookRotation(runFromXZ, storeNormal); //set target towards direction of motion
 
-			 foreach (Transform child in transform) {
+				//don't rotate me if i am dead
+				if (myStats.imDead == false) {
 
-			child.rotation = child.rotation.EaseTowards(targetRotation, .2f); //rotate towards the direction of motion
+					foreach (Transform child in transform) {
 
+					child.rotation = child.rotation.EaseTowards(targetRotation, .2f); //rotate towards the direction of motion
+
+					}
 			}
-			//myRotation = child.rotation;
-
 
 				runFromTarget = transform.position - myHunter.transform.position;
-				//runFromTarget -= myHunter.transform.position;
 
 				if (runFromTarget.sqrMagnitude != 0) {
 
@@ -100,8 +102,6 @@ public class bughavior : MonoBehaviour {
 						speed = maxSpeed;
 
 					}
-
-
 				}
 
 		} else {
@@ -112,18 +112,19 @@ public class bughavior : MonoBehaviour {
 				if (speed < 0) {
 
 					speed = 0;
+					}
+				}
+			
+			onDeath();
+		
+			if (myStats.imDead == false) {
+
+				moveDirection = Vector3.Lerp(transform.position, targetPosition, 1);
+				moveDirection *= speed;
 
 				}
+			}
 
-			//targetPosition = Vector3.zero;
-
-			} 
-
-			onDeath();
-			moveDirection = Vector3.Lerp(transform.position, targetPosition, 1);
-			moveDirection *= speed;
-
-		}
 
 			//If im on fire, turn on the fire particles, and trigger other fire behaviors
 			if (fireOn == true) {
@@ -136,16 +137,20 @@ public class bughavior : MonoBehaviour {
 			}
 
 		//How to take damage while on fire
-		if (burning = true && myStats.imDead == false) {
+		if (burning == true && myStats.imDead == false) {
 
-			myStats.HP -= 0.1f * Time.deltaTime;
+			myStats.HP -= 0.25f * Time.deltaTime;
 			Debug.Log("bugHP: " + myStats.HP);
 
 		}
 
+		if (myStats.imDead == false) {
+
 		//Do the movement last, after all the other calculations are done
 		moveDirection.y -= dragonMovement.gravity * Time.deltaTime;
 		myController.Move(moveDirection * Time.deltaTime);
+
+		} 
 	}
 
 	void OnTriggerEnter(Collider other) {

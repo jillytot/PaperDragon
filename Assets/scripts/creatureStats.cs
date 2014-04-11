@@ -74,7 +74,7 @@ public class creatureStats : MonoBehaviour {
 
 
 			calorieStore -= calorieBurnRate * Time.deltaTime;
-			Debug.Log ("Calories: " + calorieStore);
+			//Debug.Log ("Calories: " + calorieStore);
 
 	}
 }
