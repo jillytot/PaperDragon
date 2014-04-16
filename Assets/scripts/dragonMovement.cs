@@ -5,6 +5,7 @@ using System.Collections;
 public class dragonMovement : MonoBehaviour {
 
 	public creatureStats mystats;
+	creatureStats preyStats;
 	
 	public float speed = 15.0F; //Max speed of the character
 	float newSpeed; //Used to modify speed based on input
@@ -42,6 +43,7 @@ public class dragonMovement : MonoBehaviour {
 	float breathAngleMin = 0;
 	float breathAngleMax = 35;
 	float breathAngleCur;
+	public bool fireOn = false;
 
 	public GameObject myHead;
 	GameObject thingInMyMouth;
@@ -51,6 +53,7 @@ public class dragonMovement : MonoBehaviour {
 	bool triggerMouthIsFull;
 	Vector3 mouthOffset;
 	int chewCount = 3;
+	bool triggerFireDelay;
 
 	
 	
@@ -62,6 +65,8 @@ public class dragonMovement : MonoBehaviour {
 		dragonBreath.enableEmission = false;
 		nomNom.enableEmission = false;
 		mouthIsFull = false;
+		fireOn = false;
+		triggerFireDelay = false;
 		
 		
 	}
@@ -199,18 +204,32 @@ public class dragonMovement : MonoBehaviour {
 
 	void breathControl () {
 
-		if (Input.GetButtonDown(myFire1)) {
+		if (Input.GetButtonDown(myFire1) && mystats.fireStore > 0) {
 			
 			//fireBreath.SetActive(true);
 			dragonBreath.enableEmission = true;
+			fireOn = true;
+			triggerFireDelay = false;
 			
 		} 
 		
-		if (Input.GetButtonUp(myFire1)) {
-			
-			//fireBreath.SetActive(false);
-			dragonBreath.enableEmission = false;
-			
+		if (Input.GetButtonUp(myFire1) || mystats.fireStore <= 0) {
+
+				dragonBreath.enableEmission = false;
+				fireOn = false;
+
+			if (triggerFireDelay == false) {
+
+				mystats.delayFireRefresh();
+				triggerFireDelay = true;
+
+			}
+		}
+
+		if (fireOn == true) {
+
+			mystats.fireStore -= 10 * Time.deltaTime;
+
 		}
 
 
@@ -230,6 +249,8 @@ public class dragonMovement : MonoBehaviour {
 		if (chewCount <= 0) {
 
 			chewCount = 3;
+			//If you eat the creature, add its calorie value to your calorie count
+			mystats.calorieStore += preyStats.calorieValue;
 			Destroy(thingInMyMouth);
 			mouthIsFull = false;
 
@@ -281,6 +302,7 @@ public class dragonMovement : MonoBehaviour {
 				thingInMyMouth = otherCreature.gameObject;
 				mouthIsFull = true;
 				thingInMyMouth.gameObject.GetComponent<CharacterController>().detectCollisions = false;
+				preyStats = thingInMyMouth.gameObject.GetComponent<creatureStats>();
 
 
 			}

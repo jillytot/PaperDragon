@@ -140,7 +140,7 @@ public class bughavior : MonoBehaviour {
 		if (burning == true && myStats.imDead == false) {
 
 			myStats.HP -= 0.25f * Time.deltaTime;
-			Debug.Log("bugHP: " + myStats.HP);
+			//Debug.Log("bugHP: " + myStats.HP);
 
 		}
 
