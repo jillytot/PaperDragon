@@ -6,6 +6,7 @@ public enum CreatureType {
 	notCreature,
 	dragon,
 	bug,
+	hoppington,
 
 }
 
@@ -21,8 +22,9 @@ public class creatureStats : MonoBehaviour {
 	dragonMovement playerDragon;
 	bool fireOn;
 
+	public float myScale = 1; //scale relative to player, used to calculate some stats
 	public float HP; //current HP, when HP reaches 0, you die
-	public int maxHP; //Maximum HP available
+	public float maxHP; //Maximum HP available
 
 	public int stamina; //stamina is used to do actions
 	public int maxStamina; //maximum stamina for creature
@@ -44,6 +46,8 @@ public class creatureStats : MonoBehaviour {
 
 	public bool imDead;
 
+
+
 	// Use this for initialization
 	void Start () {
 
@@ -62,6 +66,9 @@ public class creatureStats : MonoBehaviour {
 
 			playerDragon = this.gameObject.GetComponent<dragonMovement>();
 		}
+
+		maxHP *= myScale;
+		HP = maxHP;
 
 		imDead = false;
 	}
