@@ -171,8 +171,8 @@ public class basicBehavior: MonoBehaviour {
 	}
 
 	void hopping () {
-		jumpSpeed = speed;
-		if (jumpSpeed > maxJumpSpeed) {
+		jumpSpeed = speed * 2;
+	if (jumpSpeed > maxJumpSpeed) {
 			jumpSpeed = maxJumpSpeed;
 		} 
 		var myTarget = player.transform.position - transform.position;
@@ -192,10 +192,12 @@ public class basicBehavior: MonoBehaviour {
 					var lerpXZ = new Vector3(targetPosition.x, 0, targetPosition.z);
 					var tooDeeLerp = new Vector3(transform.position.x, 0, transform.position.z);
 					var lerpThatWay = Vector3.Lerp(tooDeeLerp, lerpXZ, speed);
-				//var hopThisWay = offsetToTarget.Normalize();
+				var hopThisWay = myTarget.normalized;
+				//hopThisWay = hopThisWay.normalized;
 				//offsetToTarget *= speed;
-					moveDirection = lerpThatWay;
-				//moveDirection = offsetToTarget;
+					//moveDirection = lerpThatWay;
+				moveDirection = hopThisWay;
+				moveDirection *= speed;
 					moveDirection.y = jumpSpeed;
 			}
 		}
