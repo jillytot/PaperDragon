@@ -303,6 +303,7 @@ public class dragonMovement : MonoBehaviour {
 				mouthIsFull = true;
 				thingInMyMouth.gameObject.GetComponent<CharacterController>().detectCollisions = false;
 				preyStats = thingInMyMouth.gameObject.GetComponent<creatureStats>();
+				preyStats.inMouth = true;
 
 
 			}

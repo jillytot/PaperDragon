@@ -2,12 +2,10 @@
 using System.Collections;
 
 public enum CreatureType {
-
 	notCreature,
 	dragon,
 	bug,
 	hoppington,
-
 }
 
 //This script will eventually manage stats for all creatures in the game
@@ -45,6 +43,9 @@ public class creatureStats : MonoBehaviour {
 	public CreatureType thisCreature; //Determines what kind of creature this is
 
 	public bool imDead;
+	public bool inMouth;
+
+	public float senseRadius =1;
 
 
 
@@ -53,23 +54,16 @@ public class creatureStats : MonoBehaviour {
 
 		fireTimer = Time.time -1;
 		delayFire = false;
-
 		//initialize dragon specific stats
 		if (thisCreature == CreatureType.dragon) {
-			
 			Debug.Log("I am a dragon!");
-			
 		}
-
 		creatureObject = this.gameObject;
 		if (this.gameObject.GetComponent<dragonMovement>() != null) {
-
 			playerDragon = this.gameObject.GetComponent<dragonMovement>();
 		}
-
 		maxHP *= myScale;
 		HP = maxHP;
-
 		imDead = false;
 	}
 	
@@ -78,87 +72,37 @@ public class creatureStats : MonoBehaviour {
 
 		//clamp HP baseline to 0;
 		if (HP < 0) {
-
 			HP = 0;
 			imDead = true;
-
-
 		} 
-
 		Debug.DrawRay(transform.position, Vector3.forward, Color.red, 2);
-
 		if (thisCreature == CreatureType.dragon) {
-
 			//special behavior just for dragons
 			dragonVariables();
-			
 		}
 	}	
-
 	//If i am a dragon, do this shit! 
 	void dragonVariables () {
-
-
-			calorieStore -= calorieBurnRate * Time.deltaTime;
-
+		calorieStore -= calorieBurnRate * Time.deltaTime;
 		if (Time.time < fireTimer) {
-
 			delayFire = true;
-
-		} else { delayFire = false; }
-
+		} else { 
+			delayFire = false; 
+		}
 		if (calorieStore > 0 && fireStore < maxFireStore && playerDragon.fireOn == false && delayFire == false) {
-
 			//Debug.Log("Derp Test");
 			fireStore += fireRestoreRate * Time.deltaTime;
 			calorieStore -= calorieBurnRate * Time.deltaTime;
-
 		}
-
 		//clamp all values
 		if (calorieStore <= 0) {
-
 			calorieStore = 0;
-
 		}
-			
 		if (fireStore <= 0) { fireStore = 0; }
 		if (fireStore >= maxFireStore) { fireStore = maxFireStore;}
-
 	}
 
 	public void delayFireRefresh () {
-
-		//Debug.Log("Delay Fire is triggered");
-		//delayFire = false;
-		//StartCoroutine(holdOnFire());
-
 		fireTimer = Time.time + delayRestore;
-
-
-
 	}
-
-//	IEnumerator holdOnFire () {
-//	
-//		Debug.Log("Delay Fire Coroutine is triggered");
-//
-//		if (delayFire == false) { 
-//			
-//			delayFire = true;
-//			
-//		}	
-//	
-//			//Debug.Log("Fire Delay is Set");
-//			//yield return new WaitForSeconds (delayRestore);
-//			//Debug.Log("Ok to refresh Fire Now");
-//			//delayFire = false;
-//		
-//		 while (delayFire == true) {
-//
-//			yield return new WaitForSeconds (delayRestore);
-//			delayFire = false;
-//
-//		}
-//	}
 }
