@@ -50,6 +50,7 @@ public class basicBehavior: MonoBehaviour {
 		imOnFire.enableEmission = false;
 		waitForNexFire = false;
 		burning = false;
+		moveToTarget = false;
 		
 		foreach (Transform child in transform) {		
 			myChild = child;
@@ -61,6 +62,7 @@ public class basicBehavior: MonoBehaviour {
 	void Update () {
 
 		//runAwayBehavior();
+		speedControl();
 		hopping();
 		onFireBehavior();
 
@@ -176,38 +178,43 @@ public class basicBehavior: MonoBehaviour {
 		var myTarget = player.transform.position - transform.position;
 		var offsetToTarget = transform.position - player.transform.position;
 		//TODO:Move target selection to it's own function
-		if (offsetToTarget.sqrMagnitude > myStats.senseRadius * myStats.senseRadius) {
+		if (offsetToTarget.sqrMagnitude < myStats.senseRadius * myStats.senseRadius) {
 			moveToTarget = true;
+			Debug.Log ("Target is close");
 		} else { 
 			moveToTarget = false;
+			Debug.Log ("Target is far");
 		}
 			if (myController.isGrounded) {
 				rotateChildObject(myTarget);
-				moveDirection.y = jumpSpeed * speed;
 				targetPosition = myTarget;
 				if (myStats.imDead == false) {
 					var lerpXZ = new Vector3(targetPosition.x, 0, targetPosition.z);
 					var tooDeeLerp = new Vector3(transform.position.x, 0, transform.position.z);
-					var lerpThatWay = Vector3.Lerp(tooDeeLerp, lerpXZ, 1);
-					moveDirection += lerpThatWay;
-				}		
-			} else {
-			//let gravity do the rest! 
-			//if (myTarget.sqrMagnitude != 0) {
+					var lerpThatWay = Vector3.Lerp(tooDeeLerp, lerpXZ, speed);
+				//var hopThisWay = offsetToTarget.Normalize();
+				//offsetToTarget *= speed;
+					moveDirection = lerpThatWay;
+				//moveDirection = offsetToTarget;
+					moveDirection.y = jumpSpeed;
+			}
+		}
+		rotateChildObject(myTarget);
+	}
+
+	void speedControl() {
+
 			if (moveToTarget == true) {
 				speed += acceleration * Time.deltaTime;
-					if (speed > maxSpeed) { 
-						speed = maxSpeed;	
-					}
-			} else {
-				speed -= deccelration * Time.deltaTime;
-				if (speed < 0) {
-					speed = 0;
-					}
+				if (speed > maxSpeed) { 
+					speed = maxSpeed;	
 				}
+		} else {
+			speed -= deccelration * Time.deltaTime;
+			if (speed < 0) {
+				speed = 0;
 			}
-
-		rotateChildObject(myTarget);
+		}
 	}
 
 	void rotateChildObject(Vector3 rotationTarget) { //rotates the child object
