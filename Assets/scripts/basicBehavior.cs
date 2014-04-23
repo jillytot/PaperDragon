@@ -5,6 +5,7 @@ using System.Collections;
 
 public class basicBehavior: MonoBehaviour {
 
+	//All these variables direclty effect physical behavior
 	public float speed = 0;
 	public float maxSpeed = 5;
 	public float acceleration = 1;
@@ -189,15 +190,12 @@ public class basicBehavior: MonoBehaviour {
 				rotateChildObject(myTarget);
 				targetPosition = myTarget;
 				if (myStats.imDead == false) {
-					var lerpXZ = new Vector3(targetPosition.x, 0, targetPosition.z);
-					var tooDeeLerp = new Vector3(transform.position.x, 0, transform.position.z);
-					var lerpThatWay = Vector3.Lerp(tooDeeLerp, lerpXZ, speed);
-				var hopThisWay = myTarget.normalized;
-				//hopThisWay = hopThisWay.normalized;
-				//offsetToTarget *= speed;
-					//moveDirection = lerpThatWay;
-				moveDirection = hopThisWay;
-				moveDirection *= speed;
+//					var lerpXZ = new Vector3(targetPosition.x, 0, targetPosition.z);
+//					var tooDeeLerp = new Vector3(transform.position.x, 0, transform.position.z);
+//					var lerpThatWay = Vector3.Lerp(tooDeeLerp, lerpXZ, speed);
+					var hopThisWay = myTarget.normalized;
+					moveDirection = hopThisWay;
+					moveDirection *= speed;
 					moveDirection.y = jumpSpeed;
 			}
 		}
@@ -236,9 +234,7 @@ public class basicBehavior: MonoBehaviour {
 					child.rotation = child.rotation.EaseTowards(targetRotation, rotationSpeed); //rotate towards the direction of motion
 				}
 			}
-
 		} else if (myStats.thisCreature == CreatureType.hoppington) {
-
 			var targetXZ = new Vector3 (rotationTarget.x, 0, rotationTarget.z);
 			var targetRotation = Quaternion.LookRotation(targetXZ); //set target towards direction of motion
 			if (myStats.imDead == false) { //don't rotate me if i am dead
@@ -247,5 +243,10 @@ public class basicBehavior: MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	Vector3 getMeATarget () {
+		var targetPlayer = player.transform.position;
+		return targetPlayer;
 	}
 }
