@@ -6,6 +6,8 @@ public class dragonMovement : MonoBehaviour {
 
 	public creatureStats mystats;
 	creatureStats preyStats;
+	public GameObject myWingController;
+	wingController myWingPos;
 	
 	public float speed = 15.0F; //Max speed of the character
 	float newSpeed; //Used to modify speed based on input
@@ -66,6 +68,7 @@ public class dragonMovement : MonoBehaviour {
 		mouthIsFull = false;
 		fireOn = false;
 		triggerFireDelay = false;	
+		myWingPos = myWingController.GetComponent<wingController>();
 	}
 	
 	void Start() {
@@ -93,7 +96,7 @@ public class dragonMovement : MonoBehaviour {
 				moveDirection *= newSpeed;
 				RaycastHit hit;
 				Physics.Raycast(transform.position, Vector3.down, out hit);
-				Debug.DrawRay(transform.position, Vector3.down, Color.blue, 2);
+				Debug.DrawRay(transform.position, Vector3.up, Color.blue, 2);
 				if (Physics.Raycast(transform.position, Vector3.down, 2)) {
 					storeNormal = hit.normal;
 					//Debug.Log("Normal hit: " + storeNormal);
@@ -158,11 +161,13 @@ public class dragonMovement : MonoBehaviour {
 
 	void glideControl () {
 		if (gliding == true) {
+			myWingPos.wingPositions = WingPositions.glide;
 			var adjustForGlide = gravity * liftRatio;
 			moveDirection.y -= gravity * Time.deltaTime;
 			moveDirection.y += adjustForGlide * Time.deltaTime;
 		} else {
-		moveDirection.y -= gravity * Time.deltaTime;
+			myWingPos.wingPositions = WingPositions.defaultPos;
+			moveDirection.y -= gravity * Time.deltaTime;
 			Debug.Log("I'm Not Gliding!");
 		}
 	}

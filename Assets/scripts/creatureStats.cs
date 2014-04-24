@@ -75,7 +75,6 @@ public class creatureStats : MonoBehaviour {
 			HP = 0;
 			imDead = true;
 		} 
-		Debug.DrawRay(transform.position, Vector3.forward, Color.red, 2);
 		if (thisCreature == CreatureType.dragon) {
 			//special behavior just for dragons
 			dragonVariables();
