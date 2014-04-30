@@ -203,7 +203,7 @@ public class basicBehavior: MonoBehaviour {
 	}
 
 	void speedControl() {
-
+		//manages acceleration / decceleration 
 			if (moveToTarget == true) {
 				speed += acceleration * Time.deltaTime;
 				if (speed > maxSpeed) { 

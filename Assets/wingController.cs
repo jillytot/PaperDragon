@@ -30,7 +30,7 @@ public class wingController : MonoBehaviour {
 			x = -35; y = 0; z = 0;
 			break;
 		case WingPositions.glide:
-			x = 0; y = 30; z = 50;
+			x = 0; y = 20; z = 50;
 			break;
 		case WingPositions.flap:
 			x = 0; y = 0; z = 80;

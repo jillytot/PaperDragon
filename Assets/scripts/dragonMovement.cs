@@ -59,6 +59,7 @@ public class dragonMovement : MonoBehaviour {
 	Vector3 mouthOffset;
 	int chewCount = 3;
 	bool triggerFireDelay;
+	float storeStaminaRestoreRate;
 
 	void Awake() {
 		controller = GetComponent<CharacterController>();
@@ -69,6 +70,7 @@ public class dragonMovement : MonoBehaviour {
 		fireOn = false;
 		triggerFireDelay = false;	
 		myWingPos = myWingController.GetComponent<wingController>();
+		storeStaminaRestoreRate = mystats.staminaRestoreRate;
 	}
 	
 	void Start() {
@@ -114,13 +116,15 @@ public class dragonMovement : MonoBehaviour {
 					}
 				}
 				//How to jump!
-				if (Input.GetButtonDown(myJump)) {
+				if (Input.GetButtonDown(myJump) && mystats.stamina > 0) {
 					moveDirection.y = jumpSpeed;
+					mystats.stamina -= mystats.staminaBurnFlapping;
 				}
 				//Air based movement
 			} else {
-			if (Input.GetButtonDown(myJump) && gliding == false) {
+			if (Input.GetButtonDown(myJump) && gliding == false && mystats.stamina > 0) {
 				gliding = true;
+				mystats.stamina -= mystats.staminaBurnFlapping;
 			} else if (Input.GetButtonUp(myJump)) {
 				gliding = false;
 			}
@@ -165,9 +169,11 @@ public class dragonMovement : MonoBehaviour {
 			var adjustForGlide = gravity * liftRatio;
 			moveDirection.y -= gravity * Time.deltaTime;
 			moveDirection.y += adjustForGlide * Time.deltaTime;
+			mystats.staminaRestoreRate = storeStaminaRestoreRate / 2;
 		} else {
 			myWingPos.wingPositions = WingPositions.defaultPos;
 			moveDirection.y -= gravity * Time.deltaTime;
+			mystats.staminaRestoreRate = storeStaminaRestoreRate;
 			Debug.Log("I'm Not Gliding!");
 		}
 	}
