@@ -19,13 +19,13 @@ public class dragonMovement : MonoBehaviour {
 	bool gliding;
 	public float liftRatio = 1; //at 0.01, gravity will be 99% effective, at 0.99, gravity will only be 1% effective
 
-	Quaternion myRotation; //used to store direction of movement
+	//Quaternion myRotation; //used to store direction of movement
 	float Horizontal; //raw value for Horizontal axis
 	float Vertical; //raw value for Vertical axis
 	
 	public Vector3 moveDirection = Vector3.zero; //initialize movement direction
 	private Vector3 inputMagnitude; //store axis input
-	private Vector3 lastMoveDirection; //record last movement.
+	//private Vector3 lastMoveDirection; //record last movement.
 	public Vector3 playerPos;
 
 	CharacterController controller; //create instance of character controller
@@ -38,16 +38,13 @@ public class dragonMovement : MonoBehaviour {
 	string myFire3 = "Fire3";
 	string myJump = "Jump";
 
-	//used for determining pitch / yaw of dragon as it travels over terrain
+	//used for determining pitch / yaw of dragon as it travels over terrain 
 	Vector3 storeNormal;
 
 	//variables for controlling fire breath
 	public GameObject fireBreath;
 	public ParticleSystem dragonBreath;
 	public ParticleSystem nomNom;
-	float breathAngleMin = 0;
-	float breathAngleMax = 35;
-	float breathAngleCur;
 	public bool fireOn = false;
 
 	public GameObject myHead;
@@ -63,7 +60,7 @@ public class dragonMovement : MonoBehaviour {
 
 	void Awake() {
 		controller = GetComponent<CharacterController>();
-		myRotation = transform.rotation;
+		//myRotation = transform.rotation;
 		dragonBreath.enableEmission = false;
 		nomNom.enableEmission = false;
 		mouthIsFull = false;
@@ -74,9 +71,6 @@ public class dragonMovement : MonoBehaviour {
 	}
 	
 	void Start() {
-		//trying to control the wideness and speed of the dragon breath programmatically
-		breathAngleCur = (breathAngleMin + breathAngleMax) / 2;
-		Debug.Log("Breath Angle: " + breathAngleCur);
 	}
 	
 	void Update() {
@@ -86,7 +80,7 @@ public class dragonMovement : MonoBehaviour {
 		Vertical = Input.GetAxis(myVertical);
 		inputMagnitude =  new Vector3(Horizontal, 0, Vertical);
 			if (inputMagnitude.sqrMagnitude != 0.0f) {
-				lastMoveDirection = inputMagnitude;
+				//lastMoveDirection = inputMagnitude;
 			} 
 			//Modifies speed based on axis input
 			newSpeed = speedMod();
@@ -108,9 +102,10 @@ public class dragonMovement : MonoBehaviour {
 				foreach (Transform child in transform) {
 					if (moveDirection.sqrMagnitude > 0) { 
 						//myAnimation.SetBool("Run", true); //Changes avatar to running state
+						//var normalRotation = Quaternion.FromToRotation(transform.up, storeNormal);
 						var targetRotation = Quaternion.LookRotation(moveDirection, storeNormal); //set target towards direction of motion
 						child.rotation = child.rotation.EaseTowards(targetRotation, turnSpeed); //rotate towards the direction of motion
-						myRotation = child.rotation;
+						//myRotation = child.rotation;
 					}  else {
 						//myAnimation.SetBool ("Run", false); 
 					}
@@ -143,7 +138,7 @@ public class dragonMovement : MonoBehaviour {
 						if (inputMagnitude.sqrMagnitude > 0.5f) {
 							var targetRotation = Quaternion.LookRotation(lookatMoveDirection); //set target towards direction of motion
 							child.rotation = child.rotation.EaseTowards(targetRotation, turnSpeed); //rotate towards the direction of motion
-							myRotation = child.rotation;
+							//myRotation = child.rotation;
 						}
 					}  else {
 						//myAnimation.SetBool ("Run", false); 

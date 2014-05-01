@@ -1,12 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(creatureStats))]
+public enum ControlType {
+	Player,
+	AI,
+}
 
+public enum Behaviors {
+	Idle,
+	Roam,
+	RunAway,
+	Chase,
+	Panic,
+}
+
+[RequireComponent(typeof(creatureStats))]
 public class basicBehavior: MonoBehaviour {
 
 	//All these variables direclty effect physical behavior
 	public float speed = 0;
+	//float adjustedSpeed;
 	public float maxSpeed = 5;
 	public float acceleration = 1;
 	public float deccelration = 1;
@@ -17,6 +30,11 @@ public class basicBehavior: MonoBehaviour {
 	bool runAway = false;
 	
 	CharacterController myController;
+	public float Horizontal; //raw value for Horizontal axis
+	public float Vertical; //raw value for Vertical axis
+
+
+
 	public Vector3 moveDirection = Vector3.zero; //initialize movement direction
 	
 	Vector3 runFromTarget;
@@ -37,6 +55,11 @@ public class basicBehavior: MonoBehaviour {
 	public Transform player;
 	public bool hopper;
 	bool moveToTarget;
+
+	float horMax = 1;
+	float horMin = -1;
+	float verMax = 1;
+	float verMin = -1;
 	
 	// Use this for initialization
 	void Start () {
@@ -58,12 +81,29 @@ public class basicBehavior: MonoBehaviour {
 		}
 		storeMat = myChild.renderer.material;
 	}
+
+	void aiController () {
+		//Temp code for testing------------------------------------------------------------
+		//Horizontal = 0.5f;
+		//Vertical = 0.5f;
+		//-----------------------------------------------------------------------------------------
+
+		//ClampValues for input
+		if (Horizontal >= horMax) { Horizontal = horMax;}
+		if (Horizontal <= horMin) {Horizontal = horMin;}
+		if (Vertical >= verMax) {Vertical = verMax;}
+		if (Vertical <= verMin) {Vertical = verMin;}
+		moveDirection = new Vector3(Horizontal, 0, Vertical);
+		moveDirection *= speed;
+		rotateChildObject(moveDirection);
+	}
 	
 	// Update is called once per frame
 	void Update () {
 
 		//runAwayBehavior();
 		speedControl();
+		//aiController();
 		hopping();
 		onFireBehavior();
 
@@ -190,9 +230,6 @@ public class basicBehavior: MonoBehaviour {
 				rotateChildObject(myTarget);
 				targetPosition = myTarget;
 				if (myStats.imDead == false) {
-//					var lerpXZ = new Vector3(targetPosition.x, 0, targetPosition.z);
-//					var tooDeeLerp = new Vector3(transform.position.x, 0, transform.position.z);
-//					var lerpThatWay = Vector3.Lerp(tooDeeLerp, lerpXZ, speed);
 					var hopThisWay = myTarget.normalized;
 					moveDirection = hopThisWay;
 					moveDirection *= speed;
@@ -249,4 +286,22 @@ public class basicBehavior: MonoBehaviour {
 		var targetPlayer = player.transform.position;
 		return targetPlayer;
 	}
+
+//	float speedMod () {
+//		
+//		//get the absolute value of each axis
+//		var horAbs = Mathf.Abs(Horizontal);
+//		var vertAbs = Mathf.Abs(Vertical);
+//		float angle = 0;
+//		//do some math...
+//		if (horAbs > vertAbs) { 
+//			angle = Mathf.Atan2(vertAbs, horAbs); 
+//		} else {
+//			angle = Mathf.Atan2(horAbs, vertAbs);
+//		}
+//		adjustedSpeed = Mathf.Cos(angle);
+//		newSpeed *= speed;
+//		//It magically works!
+//		return newSpeed;
+//	}
 }

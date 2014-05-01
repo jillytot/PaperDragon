@@ -41,11 +41,7 @@ I also think that elements like Wind speed and direction should play a big roll 
 Dragon Attacks:\
 Breath - Already semi-implemented as fire\'85 \
 Fire damage should build up over time, and an enemy should reach a critical point where it could catch fire. (Right now it catches fire immediately, and everything burns at a flat rate, it should definitely be more varied). \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-
-\fs72 \cf0 DRAGON BUTT\
-also fooood
-\fs24 \
+\
 Biting: Small enemies should be able to be picked up in the dragon's mouth almost immediately. You shouldn't have to kill small creatures first before eating them, unless they have special properties (like a porcupine).  Not sure if biting should be used as a normal attack. \
 \
 Claws / Melee - Basic claw attack should always be available, so you always have something you can use if you don't have energy / stamina for anything else.\
@@ -53,9 +49,8 @@ Claws / Melee - Basic claw attack should always be available, so you always have
 Stealth:  you should have some sneakiness rating that allows you to creep up on other creatures based on their level of alertness, directed attention, or sensitivity to noise etc..  In order to sneak, the dragon could enter another state where it crouches and walks slower, and can do a leap attack while locked onto it's target (ala tokyo Jungle). \
 \
 Dodging - Some kind of back step\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 
-\b \cf0 \
+\b \
 
 \b0 (While in air):\
 \
@@ -123,5 +118,24 @@ Wing Thrust - How much thrust each flap of the wings gives you. \
 Air Maneuverability - Quickly change direction / speed\
 wings - pitch, roll\
 tail / fins - yaw\
+\
+\
+Creature Component Breakdown:\
+Creature: What am i? A dragon, a bug? \
+Control Type; Player or AI, \
+Type of Locomotion (walking, hopping, slithering, etc.. ) \
+Action(s): Attacking, Jumping, somethings can be done at the same time, others can't. \
+Status Effects: On Fire, poisoned etc..\
+Physical Space: Grounded, in air, in water\
+\
+AI specific Components:\
+Control Behavior: What am i doing right now?\
+Sensing Methods: Sight, sound etc.. \
+Triggers for different behavior states (sensing surroundings, checking my current status);\
+\
+\
+Player currently uses Horizontal and Vertical axis at 1 to -1 for each axis. AI controlled creatures should still be receiving the same raw input, but that input is determined by AI rather than the player controller. In theory, i should be able to control any creature with the same controller inputs used for the dragon. \
+\
+Right now movement target and a physical target like the player are represented the same way. They should be different, especially for pathfinding. \
 \
 }

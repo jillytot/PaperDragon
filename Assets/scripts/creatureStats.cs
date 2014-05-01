@@ -51,10 +51,7 @@ public class creatureStats : MonoBehaviour {
 	public float caloriesToStamina; //how many calories are burned to restore stamina
 	//float storeStaminaRestoreRate;
 	public float staminaBurnFlapping = 25; //amount of stamina used for flapping wings
-
-
-
-	// Use this for initialization
+	
 	void Start () {
 
 		fireTimer = Time.time -1;
@@ -65,7 +62,7 @@ public class creatureStats : MonoBehaviour {
 			Debug.Log("I am a dragon!");
 		}
 		creatureObject = this.gameObject;
-		if (this.gameObject.GetComponent<dragonMovement>() != null) {
+		if (creatureObject.GetComponent<dragonMovement>() != null) {
 			playerDragon = this.gameObject.GetComponent<dragonMovement>();
 		}
 		maxHP *= myScale;
