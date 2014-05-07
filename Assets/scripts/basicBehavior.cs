@@ -19,8 +19,9 @@ public class basicBehavior: MonoBehaviour {
 
 	//All these variables direclty effect physical behavior
 	public float speed = 0;
-	//float adjustedSpeed;
+	private float newSpeed; //For fixing diagonal movment under analogue controls 
 	public float maxSpeed = 5;
+	public float walkingSpeed = 2.5f;
 	public float acceleration = 1;
 	public float deccelration = 1;
 	public float jumpSpeed = 1;
@@ -28,9 +29,13 @@ public class basicBehavior: MonoBehaviour {
 	public float rotationSpeed = 0.2f;
 	
 	bool runAway = false;
+	bool triggerRunAway = false;
 	
 	CharacterController myController;
+
+	[Range(-1, 1)]
 	public float Horizontal; //raw value for Horizontal axis
+	[Range(-1, 1)]
 	public float Vertical; //raw value for Vertical axis
 
 
@@ -53,13 +58,16 @@ public class basicBehavior: MonoBehaviour {
 	Transform myChild;
 
 	public Transform player;
-	public bool hopper;
+	//public bool hopper;
 	bool moveToTarget;
 
 	float horMax = 1;
 	float horMin = -1;
 	float verMax = 1;
 	float verMin = -1;
+
+	bool triggerWalk = false;
+	bool walking = false;
 	
 	// Use this for initialization
 	void Start () {
@@ -93,19 +101,80 @@ public class basicBehavior: MonoBehaviour {
 		if (Horizontal <= horMin) {Horizontal = horMin;}
 		if (Vertical >= verMax) {Vertical = verMax;}
 		if (Vertical <= verMin) {Vertical = verMin;}
+		//TODO: Vertical and Horizontal 0 to upper or lower value should be a % of max speed, and acceleration should work based off of this... mabye
 		moveDirection = new Vector3(Horizontal, 0, Vertical);
-		moveDirection *= speed;
+		newSpeed = speedMod();
+		moveDirection *= newSpeed;
 		rotateChildObject(moveDirection);
 	}
+
+	float speedMod () {
+		
+		//get the absolute value of each axis
+		var horAbs = Mathf.Abs(Horizontal);
+		var vertAbs = Mathf.Abs(Vertical);
+		float angle = 0;
+		//do some math...
+		if (horAbs > vertAbs) { 
+			angle = Mathf.Atan2(vertAbs, horAbs); 
+		} else {
+			angle = Mathf.Atan2(horAbs, vertAbs);
+		}
+		newSpeed = Mathf.Cos(angle);
+		newSpeed *= speed;
+		//It magically works!
+		return newSpeed;
+	}
+
+	void randomWalk () {
+
+		if (triggerWalk == false && walking == false && speed == 0) {
+			Vertical = Random.Range(-1.0f, 1.0f);
+			Horizontal = Random.Range(-1.0f, 1.0f);
+			triggerWalk = true;
+			walking = true;
+			StartCoroutine("walkCycle");
+		}
+		speedControl();
+		aiController();
+	}
+
+	IEnumerator walkCycle () {
+		yield return new WaitForSeconds(Random.Range(0.5f, 3.5f));
+		walking = false;
+		yield return new WaitForSeconds(Random.Range(0.5f, 3.5f));
+		triggerWalk = false;
+	}
 	
+
 	// Update is called once per frame
 	void Update () {
 
-		//runAwayBehavior();
-		speedControl();
-		//aiController();
-		hopping();
-		onFireBehavior();
+		switch (myStats.thisCreature) {
+		case (CreatureType.bug):
+			Debug.Log("I am just a little old bug");
+			//speedControl();
+
+			//current active behavior
+			if (runAway == true) {
+				runAwayBehavior();
+			} else { randomWalk();}
+
+			//passive behaviors
+			onFireBehavior();
+			break;
+
+		case (CreatureType.hoppington):
+			Debug.Log ("I am Mr. Hoppington, it's nice to meet you");
+			speedControl();
+			hopping();
+			onFireBehavior();
+			break;
+
+		default:
+			Debug.Log("There is no assigned creature behavior... watchoo gonna do?");
+			break;
+		}
 
 		if (myStats.imDead == false) {
 			//Do the movement last, after all the other calculations are done
@@ -126,6 +195,7 @@ public class basicBehavior: MonoBehaviour {
 		if (runForIt) {
 			Debug.Log("Run AWAY!!!");
 			runAway = true; 
+			triggerRunAway = true;
 			myHunter = other.GetComponent<Transform>();
 		} 
 	}
@@ -134,6 +204,14 @@ public class basicBehavior: MonoBehaviour {
 		//If the hunter is not near, it's safe to resume normal behavior.
 		var itsSafeNow = other.gameObject.CompareTag("hunter");
 		if (itsSafeNow) {
+			triggerRunAway = false;
+		} 
+		StartCoroutine("keepRunning");
+	}
+
+	IEnumerator keepRunning () {
+		yield return new WaitForSeconds(1);
+		if (triggerRunAway == false) {
 			runAway = false;
 		}
 	}
@@ -212,6 +290,7 @@ public class basicBehavior: MonoBehaviour {
 	}
 
 	void hopping () {
+		Debug.Log("I should be hopping");
 		jumpSpeed = speed * 2;
 	if (jumpSpeed > maxJumpSpeed) {
 			jumpSpeed = maxJumpSpeed;
@@ -246,6 +325,11 @@ public class basicBehavior: MonoBehaviour {
 				if (speed > maxSpeed) { 
 					speed = maxSpeed;	
 				}
+		} else if (walking == true) {
+			speed += acceleration * Time.deltaTime;
+			if (speed > walkingSpeed) {
+				speed = walkingSpeed;
+			}
 		} else {
 			speed -= deccelration * Time.deltaTime;
 			if (speed < 0) {
@@ -253,6 +337,20 @@ public class basicBehavior: MonoBehaviour {
 			}
 		}
 	}
+
+		void speedUp () {
+			speed += acceleration * Time.deltaTime;
+			if (speed > maxSpeed) { 
+				speed = maxSpeed;	
+			}
+		}
+	void slowDown () {
+		speed -= deccelration * Time.deltaTime;
+		if (speed <= 0) {
+			speed  = 0;
+		}
+	}
+	
 
 	void rotateChildObject(Vector3 rotationTarget) { //rotates the child object
 	
@@ -287,21 +385,7 @@ public class basicBehavior: MonoBehaviour {
 		return targetPlayer;
 	}
 
-//	float speedMod () {
-//		
-//		//get the absolute value of each axis
-//		var horAbs = Mathf.Abs(Horizontal);
-//		var vertAbs = Mathf.Abs(Vertical);
-//		float angle = 0;
-//		//do some math...
-//		if (horAbs > vertAbs) { 
-//			angle = Mathf.Atan2(vertAbs, horAbs); 
-//		} else {
-//			angle = Mathf.Atan2(horAbs, vertAbs);
-//		}
-//		adjustedSpeed = Mathf.Cos(angle);
-//		newSpeed *= speed;
-//		//It magically works!
-//		return newSpeed;
-//	}
+	void sensing () {
+
+	}
 }

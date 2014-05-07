@@ -108,7 +108,7 @@ public class CustomBehaviour : MonoBehaviour {
 			yield return t / duration;
 		}
 		yield return 1f;
-	}
+	}	
 }
 
 
