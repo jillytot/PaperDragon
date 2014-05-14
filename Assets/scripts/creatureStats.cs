@@ -6,6 +6,7 @@ public enum CreatureType {
 	dragon,
 	bug,
 	hoppington,
+	velvetdear
 }
 
 //This script will eventually manage stats for all creatures in the game
@@ -66,6 +67,7 @@ public class creatureStats : MonoBehaviour {
 			playerDragon = this.gameObject.GetComponent<dragonMovement>();
 		}
 		maxHP *= myScale;
+	
 		HP = maxHP;
 		imDead = false;
 	}

@@ -68,9 +68,16 @@ public class basicBehavior: MonoBehaviour {
 
 	bool triggerWalk = false;
 	bool walking = false;
+
+	public GameObject[] bodyParts;
+	public CharacterController[] bodyPartControllers;
+
+	public Quaternion myRot;
 	
 	// Use this for initialization
 	void Start () {
+
+		myRot = Quaternion.identity;
 		
 		//myStats = new creatureStats();
 		myStats = this.gameObject.GetComponent<creatureStats>();
@@ -107,6 +114,8 @@ public class basicBehavior: MonoBehaviour {
 		moveDirection *= newSpeed;
 		rotateChildObject(moveDirection);
 	}
+
+
 
 	float speedMod () {
 		
@@ -167,7 +176,14 @@ public class basicBehavior: MonoBehaviour {
 		case (CreatureType.hoppington):
 			Debug.Log ("I am Mr. Hoppington, it's nice to meet you");
 			speedControl();
-			hopping();
+			hopTowards();
+			//hopController();
+			onFireBehavior();
+			break;
+
+		case (CreatureType.velvetdear):
+			Debug.Log("I am mr. Velvetdear and i'm gonna #()*#%#% you up!");
+			randomWalk();
 			onFireBehavior();
 			break;
 
@@ -289,7 +305,8 @@ public class basicBehavior: MonoBehaviour {
 		}
 	}
 
-	void hopping () {
+	//This method of hopping hops towards a specific target
+	void hopTowards () {
 		Debug.Log("I should be hopping");
 		jumpSpeed = speed * 2;
 	if (jumpSpeed > maxJumpSpeed) {
@@ -318,6 +335,29 @@ public class basicBehavior: MonoBehaviour {
 		rotateChildObject(myTarget);
 	}
 
+	//This is the AI controller for hopping, should plug into normal AI behavior..
+	void hopController () {
+		if (Horizontal != 0 || Vertical != 0) {
+			moveToTarget = true;
+		} else { moveToTarget = false;}
+		Debug.Log("I should be hopping");
+		jumpSpeed = newSpeed * 2;
+		if (jumpSpeed > maxJumpSpeed) {
+			jumpSpeed = maxJumpSpeed;
+		} 
+		if (myController.isGrounded) {
+			Debug.Log("hop hop hop");
+			rotateChildObject(moveDirection);
+			if (myStats.imDead == false) {
+				speedControl();
+				rotateChildObject(moveDirection);
+				aiController();
+				moveDirection.y = jumpSpeed;
+			}
+		}
+		rotateChildObject(moveDirection);
+	}
+
 	void speedControl() {
 		//manages acceleration / decceleration 
 			if (moveToTarget == true) {
@@ -338,19 +378,6 @@ public class basicBehavior: MonoBehaviour {
 		}
 	}
 
-		void speedUp () {
-			speed += acceleration * Time.deltaTime;
-			if (speed > maxSpeed) { 
-				speed = maxSpeed;	
-			}
-		}
-	void slowDown () {
-		speed -= deccelration * Time.deltaTime;
-		if (speed <= 0) {
-			speed  = 0;
-		}
-	}
-	
 
 	void rotateChildObject(Vector3 rotationTarget) { //rotates the child object
 	
